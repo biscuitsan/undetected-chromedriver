@@ -1,30 +1,93 @@
-
 # undetected_chromedriver #
 
 https://github.com/ultrafunkamsterdam/undetected-chromedriver
 
-**Best wishes and a great undetected 2023**
 
 Optimized Selenium Chromedriver patch which does not trigger anti-bot services like Distill Network / Imperva / DataDome / Botprotect.io
 Automatically downloads the driver binary and patches it.
 
 * Tested until current chrome beta versions
-* Works also on Brave Browser and many other Chromium based browsers, some tweaking
+* Works also on Brave Browser and many other Chromium based browsers, but you need to know what you're doing and needs some tweaking.
 * Python 3.6++**
+
+
+## Installation ##
+
+```
+pip install undetected-chromedriver
+```
+or , if you're feeling adventurous, install directly via github
+
+```
+pip install git+https://www.github.com/ultrafunkamsterdam/undetected-chromedriver@master     # replace @master with @branchname for other branches
+```
+
+
+- - -
+## Message for all ##
+I will be putting limits on the issue tracker. It has beeen abused too long.  
+any good news?  
+Yes, i've opened [Undetected-Discussions](https://github.com/ultrafunkamsterdam/undetected-chromedriver/discussions) which i think will help us better in the long run. 
+- - -
+
+What this is not
+---
+**THIS PACKAGE DOES NOT, and i repeat DOES NOT hide your IP address, so when running from a datacenter (even smaller ones), chances are large you will not pass! Also, if your ip reputation at home is low, you won't pass!**
+
+Running following code from home , and from a datacenter.
+```python
+import undetected_chromedriver as uc
+driver = uc.Chrome(headless=True,use_subprocess=False)
+driver.get('https://nowsecure.nl')
+driver.save_screenshot('nowsecure.png')
+```
+<div style="display:flex;flex-direction:row">
+<img src="https://github.com/ultrafunkamsterdam/undetected-chromedriver/assets/21027969/262dad3e-33e9-4d67-b061-b30bc74ac9bc" width="720"/>
+<img src="https://github.com/ultrafunkamsterdam/undetected-chromedriver/assets/21027969/5e1d463b-3f88-496a-9a43-a39830f909da" width="720"/>
+  </div>
+<!-- ![nowscure_local](https://github.com/ultrafunkamsterdam/undetected-chromedriver/assets/21027969/262dad3e-33e9-4d67-b061-b30bc74ac9bc) -->
+<!-- ![nowsecure_dc](https://github.com/ultrafunkamsterdam/undetected-chromedriver/assets/21027969/5e1d463b-3f88-496a-9a43-a39830f909da) -->
+
+
+
+## 3.5.0 ##
+- selenium 4.10 caused some issues. 3.5.0 is compatible and has selenium 4.9 or above pinned. I can't support <4.9 any longer.
+- Removed some kwargs from constructor: service_args, service_creationflags, service_log_path.
+- added find_elements_recursive generator function. which is more of a convenience funtion as lots of websites seem to serve different content from different frames, making it hard
+  to use find_elements
+
+
+## 3.4.5 ##
+- What a week. Had the recent advancedments in Automation-Detection algorithms pwned (so i thought) with 3.4.0, but apparently, for some OS-es this caused an error when    interacting with elements. Had to revert back using a different method, fix bugs, and now eventually was still able to stick to the initial idea (+ fixing bugs)
+- Update to chrome 110 caused another surprise, this time for HEADLESS users.
+- although headless is unsupported officially, i did patch it!
+- happy to announce IT IS NOW UNDETECTED AS WELL (but still unsupported ;))
+- special thanks here to [@mdmintz](https://github.com/mdmintz) and [@abdulzain6](https://github.com/abdulzain6)
+- also special thanks to [@sebdelsol](https://github.com/sebdelsol) for his help troughout the issues section completely voluntarily, you must be crazy :)
+  
+### 3.4.0 ###
+**Big update! be careful as it -potentially- could break your code.**
+
+* rewritten the anti-detection mechanism instead of removing and renaming variables, we just keep them, but prevent them from being injected in the first place. This will keep us safe from detection at least for the near future.
+
+* rewritten the file naming, to prevent ending up with 1000 of {randomstring}_chromedriver.exe 's instead it is just called undetected_chromedriver.exe
+
+* cleanup removed compat,v2 files and tests folder
+
+
+
 
 ### 3.2.0 ###
 
-* added an example containing some typical webdriver code, answers to commonly asked questions, 
-pitfalls + showcasing some tricks to ditch the need for multithreading.
+* added an example containing some typical webdriver code, answers to commonly asked questions, pitfalls + showcasing some tricks to ditch
+  the need for multithreading.
 
-### [>>>> example code here <<<<](https://github.com/ultrafunkamsterdam/undetected-chromedriver/blob/master/example/example.py) 
+### [>>>> example code here <<<<](https://github.com/ultrafunkamsterdam/undetected-chromedriver/blob/master/example/example.py)
 
-* added WebElement.click_safe() method, which you can try in case you get detected
-  after clicking a link. This is not guaranteed t o work.
+* added WebElement.click_safe() method, which you can try in case you get detected after clicking a link. This is not guaranteed t o work.
 
 * added WebElement.children(self, tag=None, recursive=False)
-  to easily get/find child nodes. 
-  example:
+  to easily get/find child nodes. example:
     ```
     body = driver.find_element('tag name', 'body')
     
@@ -32,104 +95,95 @@ pitfalls + showcasing some tricks to ditch the need for multithreading.
     images = body.children()[6].children('img', True)
     srcs = list(map(lambda _:_.attrs.get('src'), images))
     ```
-     
-* added example.py where i can point people at
-  when asking silly questions
+
+* added example.py where i can point people at when asking silly questions
   (no, its actually quite cool, everyone should see it)
 * added support for lambda platform
 * added support for x86_32
 * added support for systems reporting as linux2
 * some refactoring
 
-
 ### 3.1.6 ###
+
 ### still passing strong ###
 
-- use_subprocess now defaults to True. too many people don't understand multiprocessing and __name__ == '__main__, and after testing, it seems not to make a difference anymore in chrome 104+
+- use_subprocess now defaults to True. too many people don't understand multiprocessing and __name__ == '__main__, and after testing, it
+  seems not to make a difference anymore in chrome 104+
 
 - added no_sandbox, which defaults to True, and this without the annoying "you are using unsecure command line ..." bar.
 
-- update [Docker image](https://hub.docker.com/r/ultrafunk/undetected-chromedriver).
-  you can now vnc or rdp into your container to see the actual browser window
-[![demo](https://i.imgur.com/51Ang6R.gif)](https://i.imgur.com/W7vriN9.mp4)
+- update [Docker image](https://hub.docker.com/r/ultrafunk/undetected-chromedriver). you can now vnc or rdp into your container to see the
+  actual browser window
+  [![demo](https://i.imgur.com/51Ang6R.gif)](https://i.imgur.com/W7vriN9.mp4)
 
 - of course, "regular" mode works as well
-[![demo](https://i.imgur.com/2qSNyuK.gif)](https://i.imgur.com/2qSNyuK.mp4)
-
+  [![demo](https://i.imgur.com/2qSNyuK.gif)](https://i.imgur.com/2qSNyuK.mp4)
 
 ### 3.1.0 ###
 
-  **this version `might` break your code, test before update!**
+**this version `might` break your code, test before update!**
 
-  - **added new anti-detection logic!**
-  
-  - v2 has become the main module, so no need for references to v2 anymore. this mean you can now simply use:
-    ```python
-    import undetected_chromedriver as uc
-    driver = uc.Chrome()
-    driver.get('https://nowsecure.nl')
-    ```
-    for backwards compatibility, v2 is not removed, but aliassed to the main module.
-  
-  - Fixed "welcome screen" nagging on non-windows OS-es. 
-    For those nagfetishists who ❤ welcome screens and feeding google with even more data, use Chrome(suppress_welcome=False).
+- **added new anti-detection logic!**
 
-  - replaced `executable_path` in constructor in favor of `browser_executable_path`
-    which should not be used unless you are the edge case (yep, you are) who can't add your custom chrome installation folder to your PATH environment variable, or have an army of different browsers/versions and automatic lookup returns the wrong browser
+- v2 has become the main module, so no need for references to v2 anymore. this mean you can now simply use:
+  ```python
+  import undetected_chromedriver as uc
+  driver = uc.Chrome()
+  driver.get('https://nowsecure.nl')
+  ```
+  for backwards compatibility, v2 is not removed, but aliassed to the main module.
 
-  - "v1" (?) moved to _compat for now.
-  
-  - fixed dependency versions  
-  
-  - ChromeOptions custom handling removed, so it is compatible with `webdriver.chromium.options.ChromiumOptions`. 
+- Fixed "welcome screen" nagging on non-windows OS-es. For those nagfetishists who ❤ welcome screens and feeding google with even more data,
+  use Chrome(suppress_welcome=False).
 
-  - removed Chrome.get() fu and restored back to "almost" original:
-       - no `with` statements needed anymore, although it will still 
-         work for the sake of backward-compatibility.
-       - no sleeps, stop-start-sessions, delays, or async cdp black magic!
-       - this will solve a lot of other "issues" as well.
+- replaced `executable_path` in constructor in favor of `browser_executable_path`
+  which should not be used unless you are the edge case (yep, you are) who can't add your custom chrome installation folder to your PATH
+  environment variable, or have an army of different browsers/versions and automatic lookup returns the wrong browser
 
-  - test success to date: 100% 
-  
-  - just to mention it another time, since some people have hard time reading:
-    **headless is still WIP. Raising issues is needless**      
-  
-  
+- "v1" (?) moved to _compat for now.
 
+- fixed dependency versions
 
+- ChromeOptions custom handling removed, so it is compatible with `webdriver.chromium.options.ChromiumOptions`.
 
+- removed Chrome.get() fu and restored back to "almost" original:
+    - no `with` statements needed anymore, although it will still work for the sake of backward-compatibility.
+    - no sleeps, stop-start-sessions, delays, or async cdp black magic!
+    - this will solve a lot of other "issues" as well.
+
+- test success to date: 100%
+
+- just to mention it another time, since some people have hard time reading:
+  **headless is still WIP. Raising issues is needless**
 
 # 3.0.4 changes #
- - change process creation behavior to be fully detached
- - changed .get(url) method to always use the contextmanager 
- - changed .get(url) method to use cdp under the hood. 
 
-    ... the `with` statement is not necessary anymore ..
- 
- - todo: work towards asyncification and selenium 4
- 
- #### words of wisdom: ####
- Whenever you encounter the daunted
- 
- ```from session not created: This version of ChromeDriver only supports Chrome version 96 # or what ever version``` 
- 
- the solution is simple:  
+- change process creation behavior to be fully detached
+- changed .get(url) method to always use the contextmanager
+- changed .get(url) method to use cdp under the hood.
+
+  ... the `with` statement is not necessary anymore ..
+
+- todo: work towards asyncification and selenium 4
+
+#### words of wisdom: ####
+
+Whenever you encounter the daunted
+
+```from session not created: This version of ChromeDriver only supports Chrome version 96 # or what ever version```
+
+the solution is simple:
+
  ```python
-   import undetected_chromedriver.v2 as uc
-   driver = uc.Chrome(version_main=95)
+    import undetected_chromedriver as uc
+    driver = uc.Chrome( version_main = 95 )
  ```
 
- 
- 
 **July 2021: Currently busy implementing selenium 4 for undetected-chromedriver**
 
 **newsflash: https://github.com/ultrafunkamsterdam/undetected-chromedriver/pull/255**
 
 
-## Installation ##
-```
-pip install undetected-chromedriver
-```
 
 ## Usage ##
 
@@ -138,42 +192,46 @@ To prevent unnecessary hair-pulling and issue-raising, please mind the **[import
 <br>
 
 ### easy ###
-Literally, this is all you have to do. 
-Settings are included and your browser executable is found automagically.
-This is also the snippet i recommend using in case you experience an issue.
-```python
-import undetected_chromedriver.v2 as uc
-driver = uc.Chrome()
-driver.get('https://nowsecure.nl')  # my own test test site with max anti-bot protection
-```
 
-### more advanced way, including setting profie folder ###
-Literally, this is all you have to do. 
-If a specified folder does not exist, a NEW profile is created.
-Data dirs which are specified like this will not be autoremoved on exit.
-
+Literally, this is all you have to do. Settings are included and your browser executable is found automagically. This is also the snippet i
+recommend using in case you experience an issue.
 
 ```python
 import undetected_chromedriver as uc
+
+
+driver = uc.Chrome()
+driver.get( 'https://nowsecure.nl' )  # my own test test site with max anti-bot protection
+```
+
+### more advanced way, including setting profie folder ###
+
+Literally, this is all you have to do. If a specified folder does not exist, a NEW profile is created. Data dirs which are specified like
+this will not be autoremoved on exit.
+
+```python
+import undetected_chromedriver as uc
+
+
 options = uc.ChromeOptions()
 
 # setting profile
 options.user_data_dir = "c:\\temp\\profile"
 
 # use specific (older) version
-driver = uc.Chrome(options=options, version_main=94)  # version_main allows to specify your chrome version instead of following chrome global version
+driver = uc.Chrome(
+    options = options , version_main = 94
+    )  # version_main allows to specify your chrome version instead of following chrome global version
 
-driver.get('https://nowsecure.nl')   # my own test test site with max anti-bot protection
+driver.get( 'https://nowsecure.nl' )  # my own test test site with max anti-bot protection
 
 ```
 
-
 ### expert mode, including Devtool/Wire events  ###
-Literally, this is all you have to do. 
-You can now listen and subscribe to the low level devtools-protocol.
-I just recently found out that is also on planning for future release of the official chromedriver.
-However i implemented my own for now. Since i needed it myself for investigation.
 
+Literally, this is all you have to do. You can now listen and subscribe to the low level devtools-protocol. I just recently found out that
+is also on planning for future release of the official chromedriver. However i implemented my own for now. Since i needed it myself for
+investigation.
 
 ```python
 
@@ -1127,89 +1185,98 @@ driver.get('https://nowsecure.nl')
 # hopefullly you get the idea.
 ```
 
-
-
-
-
 <br>
 <br>
 
 #### the easy way (v1 old stuff) ####
+
 ```python
 import undetected_chromedriver as uc
+
+
 driver = uc.Chrome()
-driver.get('https://distilnetworks.com')
+driver.get( 'https://distilnetworks.com' )
 ```
 
-
-
-
 #### target specific chrome version  (v1 old stuff) ####
+
 ```python
 import undetected_chromedriver as uc
+
+
 uc.TARGET_VERSION = 85
 driver = uc.Chrome()
 ```
 
-
 #### monkeypatch mode  (v1 old stuff) ####
+
 Needs to be done before importing from selenium package
 
 ```python
 import undetected_chromedriver as uc
+
+
 uc.install()
 
 from selenium.webdriver import Chrome
+
+
 driver = Chrome()
-driver.get('https://distilnetworks.com')
+driver.get( 'https://distilnetworks.com' )
 
 ```
 
-
 #### the customized way  (v1 old stuff) ####
+
 ```python
 import undetected_chromedriver as uc
 
-#specify chromedriver version to download and patch
-uc.TARGET_VERSION = 78    
+
+# specify chromedriver version to download and patch
+uc.TARGET_VERSION = 78
 
 # or specify your own chromedriver binary (why you would need this, i don't know)
 
 uc.install(
-    executable_path='c:/users/user1/chromedriver.exe',
-)
+    executable_path = 'c:/users/user1/chromedriver.exe' ,
+    )
 
 opts = uc.ChromeOptions()
-opts.add_argument(f'--proxy-server=socks5://127.0.0.1:9050')
-driver = uc.Chrome(options=opts)
-driver.get('https://distilnetworks.com')
+opts.add_argument( f'--proxy-server=socks5://127.0.0.1:9050' )
+driver = uc.Chrome( options = opts )
+driver.get( 'https://distilnetworks.com' )
 ```
 
-
 #### datadome.co example  (v1 old stuff) ####
-These guys have actually a powerful product, and a link to this repo, which makes me wanna test their product.
-Make sure you use a "clean" ip for this one. 
+
+These guys have actually a powerful product, and a link to this repo, which makes me wanna test their product. Make sure you use a "clean"ip
+for this one.
+
 ```python
 #
 # STANDARD selenium Chromedriver
 #
 from selenium import webdriver
-chrome = webdriver.Chrome()
-chrome.get('https://datadome.co/customers-stories/toppreise-ends-web-scraping-and-content-theft-with-datadome/')
-chrome.save_screenshot('datadome_regular_webdriver.png')
-True   # it caused my ip to be flagged, unfortunately
 
+
+chrome = webdriver.Chrome()
+chrome.get( 'https://datadome.co/customers-stories/toppreise-ends-web-scraping-and-content-theft-with-datadome/' )
+chrome.save_screenshot( 'datadome_regular_webdriver.png' )
+True  # it caused my ip to be flagged, unfortunately
 
 #
 # UNDETECTED chromedriver (headless,even)
 #
 import undetected_chromedriver as uc
+
+
 options = uc.ChromeOptions()
-options.headless=True
-options.add_argument('--headless')
-chrome = uc.Chrome(options=options)
-chrome.get('https://datadome.co/customers-stories/toppreise-ends-web-scraping-and-content-theft-with-datadome/')
-chrome.save_screenshot('datadome_undetected_webddriver.png')
+options.headless = True
+options.add_argument( '--headless' )
+chrome = uc.Chrome( options = options )
+chrome.get( 'https://datadome.co/customers-stories/toppreise-ends-web-scraping-and-content-theft-with-datadome/' )
+chrome.save_screenshot( 'datadome_undetected_webddriver.png' )
 
 ```
+
 **Check both saved screenhots [here](https://imgur.com/a/fEmqadP)**
